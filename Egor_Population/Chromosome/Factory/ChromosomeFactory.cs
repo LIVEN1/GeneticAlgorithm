@@ -8,12 +8,13 @@ public class ChromosomeFactory : IChromosomeFactory
     public Chromosome Create()
     {
         var chromosome = new char[_chromosomeLength];
+        var profitability = _random.Next(1000, 3000);
 
         for (int i = 0; i < _chromosomeLength; i++)
         {
             chromosome[i] = (char)(_random.Next(2) + '0');
         }
 
-        return new Chromosome(new string(chromosome));
+        return new Chromosome(new string(chromosome), profitability);
     }
 }

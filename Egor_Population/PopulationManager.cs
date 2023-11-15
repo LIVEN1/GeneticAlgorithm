@@ -33,6 +33,7 @@ public class PopulationManager
     {
         _currentGenerationPopulation.Clear();
         var bestFitness = 0.0;
+        var bestProfitability = 0;
 
         for (var generation = _currentGeneration; generation < lastGeneration; generation++)
         {
@@ -42,8 +43,12 @@ public class PopulationManager
                 new Tuple<Individual.Individual, Individual.Individual>(parent1, parent2));
             var mutatedChromosome = child.Chromosome.Mutate();
             var bestFitnessInGeneration = mutatedChromosome.CalculateFitness();
+            var bestProfitabilityInGeneration = mutatedChromosome.Profitability;
             if (bestFitness < bestFitnessInGeneration)
                 bestFitness = bestFitnessInGeneration;
+
+            if (bestProfitability < bestProfitabilityInGeneration)
+                bestProfitability = bestProfitabilityInGeneration;
 
             var mutatedChild = new Individual.Individual(mutatedChromosome);
             _currentGenerationPopulation.Add(mutatedChild);
@@ -51,13 +56,14 @@ public class PopulationManager
 
             _currentGeneration++;
             _logger.LogInformation(
-                "Generation : {generation} | Best Fitness : {bestFitness}", _currentGeneration,
-                bestFitnessInGeneration);
+                "Generation : {generation} | Fitness : {bestFitness} | Profitability : {profitability}", _currentGeneration,
+                bestFitnessInGeneration, bestProfitabilityInGeneration);
         }
 
         _logger.LogInformation("Best Chromosome: {bestChromosome}",
             _currentGenerationPopulation.Max(x => x.Chromosome.BinaryRepresentation));
         _logger.LogInformation("Best Fitness: {bestFitness}", bestFitness);
+        _logger.LogInformation("Best Profitability: {profitability}", bestProfitability);
 
         return _currentGenerationPopulation;
     }
@@ -71,8 +77,8 @@ public class PopulationManager
         {
             var chromosome = _chromosomeFactory.Create();
             var individual = _individualFactory.Create(chromosome);
-            _logger.LogInformation("Created Individual With Fitness: {fitness} and Chromosome: {chromosome}",
-                chromosome.CalculateFitness(), chromosome.BinaryRepresentation);
+            _logger.LogInformation("Created Individual With Fitness: {fitness} and Chromosome: {chromosome} and Profitability: {profitability}",
+                chromosome.CalculateFitness(), chromosome.BinaryRepresentation, chromosome.Profitability);
             _individuals.Add(individual);
         }
         
